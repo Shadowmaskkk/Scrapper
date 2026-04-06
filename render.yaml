@@ -2,6 +2,7 @@ services:
   - type: web
     name: mamba-scraper
     runtime: docker
+    dockerfilePath: ./Dockerfile          # ← ADD THIS
     plan: starter
     healthCheckPath: /health
     envVars:
@@ -22,7 +23,7 @@ services:
       - key: MAX_CONCURRENT
         value: 1
       - key: TWO_CAPTCHA_API_KEY
-        sync: false
+        sync: false                        # set manually in Render dashboard
     disk:
       - name: sessions-disk
         mountPath: /app/sessions
