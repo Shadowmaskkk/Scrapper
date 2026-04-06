@@ -542,6 +542,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// GET /
+app.get('/', (req, res) => {
+  res.json({
+    service: 'Mamba Scraper API',
+    version: '2.0.0',
+    status: 'online',
+    endpoints: {
+      health: 'GET /health',
+      scrape: 'POST /scrape',
+      sessions: 'GET /sessions',
+    }
+  });
+});
+
 // POST /scrape
 app.post('/scrape', async (req, res) => {
   const { error, value } = scrapeSchema.validate(req.body);
@@ -652,7 +666,7 @@ async function start() {
   setInterval(cleanExpiredSessions, 30 * 60 * 1000);
 
   // Start server
-  app.listen(CONFIG.port, () => {
+  app.listen(CONFIG.port, '0.0.0.0', () => {
     logger.info(`Mamba Scraper running on port ${CONFIG.port}`);
     logger.info(`Headless: ${CONFIG.headless}`);
     logger.info(`Session TTL: ${CONFIG.sessionTTL}ms`);
