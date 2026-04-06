@@ -1,0 +1,24 @@
+{
+  "name": "mamba-scraper",
+  "version": "2.0.0",
+  "description": "Production-ready Playwright web scraper API",
+  "main": "mamba-scraper.js",
+  "scripts": {
+    "start": "node mamba-scraper.js",
+    "dev": "nodemon mamba-scraper.js",
+    "docker:build": "docker build -t mamba-scraper .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env mamba-scraper"
+  },
+  "dependencies": {
+    "bottleneck": "^2.19.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "joi": "^17.13.3",
+    "playwright": "^1.59.1",
+    "uuid": "^9.0.1",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
