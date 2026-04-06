@@ -366,8 +366,8 @@ async function performScrape(params) {
       if (!isLoggedIn) {
         logger.info('Starting login flow...');
 
-        // Navigate to target site - customize this URL
-        await page.goto('https://your-target-site.com', {
+        // Navigate to target site
+        await page.goto('https://mambapanel.com/', {
           waitUntil: 'domcontentloaded',
           timeout: CONFIG.requestTimeout,
         });
@@ -382,43 +382,39 @@ async function performScrape(params) {
         }
 
         // Handle signup if needed
-        if (!skipSignup) {
-          const signupLink = await page.locator('a[href*="signup"], a[href*="register"]').first();
-          const signupVisible = await signupLink.isVisible().catch(() => false);
+        if (!skipSignup && username) {
+          logger.info('Attempting signup...');
+          await page.goto('https://mambapanel.com/signup', {
+            waitUntil: 'domcontentloaded',
+            timeout: CONFIG.requestTimeout,
+          });
+          await randomDelay();
 
-          if (signupVisible && username) {
-            logger.info('Attempting signup...');
-            await signupLink.click();
-            await randomDelay();
+          await page.fill('input[name="username"], input[placeholder*="username"]', username);
+          await randomDelay(300, 800);
+          await page.fill('input[name="email"], input[type="email"]', email);
+          await randomDelay(300, 800);
+          await page.fill('input[name="password"], input[type="password"]', password);
+          await randomDelay(500, 1200);
 
-            await page.fill('input[name="username"], input[placeholder*="username"]', username);
-            await randomDelay(300, 800);
-            await page.fill('input[name="email"], input[type="email"]', email);
-            await randomDelay(300, 800);
-            await page.fill('input[name="password"], input[type="password"]', password);
-            await randomDelay(500, 1200);
+          const submitBtn = page.locator('button[type="submit"], input[type="submit"]').first();
+          await submitBtn.click();
+          await page.waitForLoadState('networkidle', { timeout: CONFIG.requestTimeout });
+          await randomDelay();
 
-            const submitBtn = page.locator('button[type="submit"], input[type="submit"]').first();
-            await submitBtn.click();
-            await page.waitForLoadState('networkidle', { timeout: CONFIG.requestTimeout });
-            await randomDelay();
-
-            isLoggedIn = true;
-            logger.info('Signup completed');
-          }
+          isLoggedIn = true;
+          logger.info('Signup completed');
         }
 
         // Login flow
         if (!isLoggedIn) {
           logger.info('Attempting login...');
 
-          const loginLink = await page.locator('a[href*="login"], a[href*="signin"]').first();
-          const loginVisible = await loginLink.isVisible().catch(() => false);
-
-          if (loginVisible) {
-            await loginLink.click();
-            await randomDelay();
-          }
+          await page.goto('https://mambapanel.com/login', {
+            waitUntil: 'domcontentloaded',
+            timeout: CONFIG.requestTimeout,
+          });
+          await randomDelay();
 
           await page.fill('input[name="email"], input[type="email"]', email);
           await randomDelay(300, 800);
@@ -471,8 +467,15 @@ async function performScrape(params) {
           },
         }));
       } else {
-        // Search flow - customize selector for your target site
-        const searchInput = page.locator('input[type="search"], input[placeholder*="search"], input[name="q"]').first();
+        // Search flow - navigate to target page
+        await page.goto('https://mambapanel.com/data-lookup', {
+          waitUntil: 'domcontentloaded',
+          timeout: CONFIG.requestTimeout,
+        });
+        await randomDelay();
+
+        // customize selector for your target site
+        const searchInput = page.locator('input[type="search"], input[placeholder*="search"], input[name="q"], input').first();
         const searchVisible = await searchInput.isVisible().catch(() => false);
 
         if (searchVisible) {
