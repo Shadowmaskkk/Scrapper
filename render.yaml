@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: mamba-scraper
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: HEADLESS
+        value: true
+      - key: LOG_LEVEL
+        value: info
+      - key: MAX_RETRIES
+        value: 3
+      - key: REQUEST_TIMEOUT
+        value: 30000
+      - key: SESSION_TTL
+        value: 3600000
+      - key: RATE_LIMIT_MIN_TIME
+        value: 2000
+      - key: MAX_CONCURRENT
+        value: 1
+      - key: TWO_CAPTCHA_API_KEY
+        sync: false
+    disk:
+      - name: sessions-disk
+        mountPath: /app/sessions
+        sizeGB: 1
+      - name: logs-disk
+        mountPath: /app/logs
+        sizeGB: 1
